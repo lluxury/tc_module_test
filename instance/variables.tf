@@ -12,3 +12,10 @@ variable "tc_user_data" {}
 variable "tc_vpc_id" {}
 variable "tc_subnet_id" {}
 variable "tc_security_group_id" {}
+
+
+variable "tc_lb_subnet_name" {}
+variable "tc_lb_cidr" {}
+variable "tc_lb_name" {}
+variable "tc_listener_name" {}
+variable "tc_backend_port" {}

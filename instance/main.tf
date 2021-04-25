@@ -25,7 +25,58 @@ resource "tencentcloud_instance" "cvm" {
 }
 
 
-output "public_ip" {
-  value       = tencentcloud_instance.cvm.public_ip
-  description = "The public IP of the Instance"
+resource "tencentcloud_subnet" "lb_subnet" {
+  name = "${var.tc_lb_subnet_name}"
+  cidr_block = "${var.tc_lb_cidr}"
+  vpc_id = "${var.tc_vpc_id}"
+  availability_zone = "${var.tc_az}"
+
+
 }
+
+resource "tencentcloud_clb_instance" "load_balancer" {
+  network_type = "INTERNAL"
+  clb_name     = "${var.tc_lb_name}"
+  project_id   = "${var.tc_project_id}"
+  vpc_id       = "${var.tc_vpc_id}"
+  subnet_id = "${tencentcloud_subnet.lb_subnet.id}"
+
+}
+
+
+resource "tencentcloud_clb_listener" "TCP_listener" {
+  clb_id                     = "${tencentcloud_clb_instance.load_balancer.id}"
+  listener_name              = "${var.tc_listener_name}"
+  port                       = 80
+  protocol                   = "TCP"
+  health_check_switch        = true
+  health_check_time_out      = 2
+  health_check_interval_time = 5
+  health_check_health_num    = 3
+  health_check_unhealth_num  = 3
+  session_expire_time        = 30
+  scheduler                  = "WRR"
+  health_check_port          = 200
+  health_check_type          = "HTTP"
+  health_check_http_code     = 2
+  health_check_http_version  = "HTTP/1.0"
+  health_check_http_method   = "GET"
+}
+
+
+
+resource "tencentcloud_clb_attachment" "backend" {
+  # count = "${var.count}"
+
+  clb_id      = "${tencentcloud_clb_instance.load_balancer.id}"
+  listener_id = "${tencentcloud_clb_listener.TCP_listener.listener_id}"
+
+  targets {
+    instance_id = "${tencentcloud_instance.cvm.id}"
+    port = "${var.tc_backend_port}"
+    weight      = 90
+  }
+
+} 
+
+
