@@ -31,7 +31,7 @@ resource "tencentcloud_security_group_lite_rule" "instance" {
   security_group_id = "${tencentcloud_security_group.security_group.id}"
 
   ingress = [
-    "ACCEPT#0.0.0.0/0#22,80,8080#TCP",
+    "ACCEPT#0.0.0.0/0#22,80,8080,3306#TCP",
     "DROP#8.8.8.8#80,90#UDP",
   ]
 
