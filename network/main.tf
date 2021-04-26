@@ -8,14 +8,16 @@ terraform {
 }
 
 
-resource "tencentcloud_vpc" "vpc_base" {
-  name = "${var.tc_vpc_name}"
-  cidr_block = "${var.tc_vpc_cidr}"
-}
+# resource "tencentcloud_vpc" "vpc_base" {
+#   name = "${var.tc_vpc_name}"
+#   cidr_block = "${var.tc_vpc_cidr}"
+# }
 
 resource "tencentcloud_subnet" "subnet_pana2" {
   cidr_block = "${var.tc_subnet_cidr}"
-  vpc_id = "${tencentcloud_vpc.vpc_base.id}"
+  # vpc_id = "${tencentcloud_vpc.vpc_base.id}"
+  vpc_id = "${var.tc_vpc_id}"
+  
   name = "${var.tc_subnet_name}"
   availability_zone = "${var.tc_az}"
 }

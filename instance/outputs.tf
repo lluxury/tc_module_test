@@ -20,13 +20,13 @@ output "instance_private_ip_addresses" {
 }
 
 
-# output "instance_public_ip_addresses" {
-#   value = {
-#     for instance in tencentcloud_instance.cvm:
-#     instance.id => instance.public_ip
-#     if instance.associate_public_ip_address
-#   }
-# }
+output "instance_public_ip_addresses" {
+  value = {
+    for instance in tencentcloud_instance.cvm:
+    instance.id => instance.public_ip
+    if instance.allocate_public_ip
+  }
+}
 
 
 output "instances_by_availability_zone" {

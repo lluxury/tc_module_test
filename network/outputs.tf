@@ -1,6 +1,6 @@
-output "vpc_id" {
-  value = "${tencentcloud_vpc.vpc_base.id}"
-}
+# output "vpc_id" {
+#   value = "${tencentcloud_vpc.vpc_base.id}"
+# }
 
 output "subnet_id" {
   value = "${tencentcloud_subnet.subnet_pana2.id}"
