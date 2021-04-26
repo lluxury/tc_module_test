@@ -19,3 +19,5 @@ variable "tc_lb_cidr" {}
 variable "tc_lb_name" {}
 variable "tc_listener_name" {}
 variable "tc_backend_port" {}
+
+variable "tc_cvm_number" {}

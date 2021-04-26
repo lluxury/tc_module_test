@@ -9,10 +9,13 @@ terraform {
 
 
 resource "tencentcloud_instance" "cvm" {
+  count   = "${var.tc_cvm_number}"                   
   image_id = "${var.tc_image_id}"
   instance_type = "${var.tc_instance_type}"
   availability_zone = "${var.tc_az}"
   system_disk_type = "CLOUD_PREMIUM"
+  # instance_charge_type = POSTPAID_BY_HOUR
+
 
   vpc_id  = "${var.tc_vpc_id }"
   subnet_id = "${var.tc_subnet_id}"
@@ -54,29 +57,30 @@ resource "tencentcloud_clb_listener" "TCP_listener" {
   health_check_interval_time = 5
   health_check_health_num    = 3
   health_check_unhealth_num  = 3
-  session_expire_time        = 30
-  scheduler                  = "WRR"
-  health_check_port          = 200
-  health_check_type          = "HTTP"
-  health_check_http_code     = 2
-  health_check_http_version  = "HTTP/1.0"
-  health_check_http_method   = "GET"
+  # session_expire_time        = 30
+  # scheduler                  = "WRR"
+  # health_check_port          = 200
+  # health_check_type          = "HTTP"
+  # health_check_http_code     = 2
+  # health_check_http_version  = "HTTP/1.0"
+  # health_check_http_method   = "GET"
 }
 
 
-
 resource "tencentcloud_clb_attachment" "backend" {
-  # count = "${var.count}"
-
   clb_id      = "${tencentcloud_clb_instance.load_balancer.id}"
   listener_id = "${tencentcloud_clb_listener.TCP_listener.listener_id}"
 
-  targets {
-    instance_id = "${tencentcloud_instance.cvm.id}"
-    port = "${var.tc_backend_port}"
-    weight      = 90
+  dynamic "targets" {
+    for_each = [for value in tencentcloud_instance.cvm: value.id]
+    content {
+      instance_id = targets.value
+      port        = "${var.tc_backend_port}"
+      weight      = 10
+    }
   }
+}
 
-} 
+
 
 
